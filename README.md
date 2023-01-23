@@ -12,7 +12,8 @@ Orion - Software,
 Owen M - Software
 
 
-**Parts List**
+**Parts List:**
+
 Arduino Uno, 
 Raspberry Pi, 
 ESP8266 (Wifi Module), 
