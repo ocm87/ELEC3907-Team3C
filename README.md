@@ -13,7 +13,6 @@ Owen M - Software
 
 
 **Parts List:**
-
 Arduino Uno, 
 Raspberry Pi, 
 ESP8266 (Wifi Module), 
