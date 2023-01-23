@@ -10,3 +10,19 @@ Sumaiya - Hardware,
 Owen L. - Integrator, 
 Orion - Software, 
 Owen M - Software
+
+
+**Parts List**
+Arduino Uno, 
+Raspberry Pi, 
+ESP8266 (Wifi Module), 
+GSM Module (SMS/Cellular),
+Pulse Sensor, 
+Accelerometer,
+Arduino micro SD Card Interface,
+Micro SD card,
+Button (SOS button), 
+DHT Sensor,
+CO Sensor,
+Enclosure (?? maybe 3d printed),
+etc
