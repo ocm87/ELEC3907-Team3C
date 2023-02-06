@@ -4,8 +4,8 @@
 #define AT_BAUD_RATE 115200
 
 // Replace with your network credentials
-const char *ssid     = "O’s iPhone";
-const char *password = "110covered";
+const char *ssid     = "SSID";
+const char *password = "PASSWORD";
 
 
 // Set web server port number to 80
