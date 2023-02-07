@@ -2,6 +2,27 @@
 Repository for ELEC3907 Project Course for Team 3
 
 --- 
+## Current Project Status:
+
+### General: 
+- Working on Presenation for Wednesday Feb 8
+
+### Software: 
+Updated Feb 6.
+- Getting Basic Wifi Functionality updated for Arduino via HTTP request
+- Formatting HTTP request response (formatting function)
+- LAMP webserver setup on Raspberry Pi
+
+### Hardware:
+Updated Feb 6.
+- Sensor Testing
+- What kind of values are we getting out of each sensor?
+
+### Integration:
+- Sensor Testing
+- Needed Libraries?
+
+---
 
 **Group Members and Roles:**
 
@@ -13,16 +34,15 @@ Owen M - Software
 
 
 **Parts List:**
-Arduino Uno, 
-Raspberry Pi, 
-ESP8266 (Wifi Module), 
-GSM Module (SMS/Cellular),
-Pulse Sensor, 
-Accelerometer,
-Arduino micro SD Card Interface,
+Arduino Mega with Integrated ESP8266, 
+Raspberry Pi,  
+Pulse/Pulse Oximeter Sensor, 
+9DOF Accelerometer,
+Micro SD Card Interface,
 Micro SD card,
 Button (SOS button), 
-DHT Sensor,
+AHT20 Sensor,
 CO Sensor,
 Enclosure (?? maybe 3d printed),
 etc
+
