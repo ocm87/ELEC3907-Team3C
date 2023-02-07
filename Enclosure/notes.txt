@@ -1,0 +1,9 @@
+
+Some notes for the creation of the enclosure for the Arduino and battery pack
+
+Need CAD Design of the model with standoffs for the arduino.
+
+Preerably a hole so that Arduino software can be updated while it's inside the enclosure 
+without having to remove it
+
+Openings for sensors and anteanae for GPS and Wifi module 
