@@ -4,8 +4,8 @@
 #define AT_BAUD_RATE 115200
 
 // Replace with your network credentials
-const char *ssid     = "SSID";
-const char *password = "password";
+const char *ssid     = "O’s iPhone";
+const char *password = "110covered";
 
 
 // Set web server port number to 80
@@ -42,7 +42,7 @@ void setup() {
   // Connect to Wi-Fi network with SSID and password
   //Serial.println("Connecting to ");
   //Serial.println(ssid);
-  WiFi.begin(ssid, password);
+  connectToWiFi();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -57,6 +57,7 @@ void setup() {
 }
 
 void loop(){
+
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
@@ -77,16 +78,18 @@ void loop(){
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
             client.println("HTTP/1.1 200 OK");
+            client.println("\r\n\r\n");
+            client.println("testing value");
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
             
             // turns the GPIOs on and off
-            if (header.indexOf("GET /13/on") >= 0) {
+            if (header.indexOf("POST /13/on") >= 0) {
               Serial.println("GPIO 13 on");
               output13State = "on";
               digitalWrite(output13, HIGH);
-            } else if (header.indexOf("GET /13/off") >= 0) {
+            } else if (header.indexOf("POST /13/off") >= 0) {
               Serial.println("GPIO 13 off");
               output13State = "off";
               digitalWrite(output13, LOW);
