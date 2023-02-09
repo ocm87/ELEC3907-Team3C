@@ -1,6 +1,6 @@
 // Load Wi-Fi library
 #include <WiFiEspAT.h>
-#include <Arduino_JSON.h>
+#include <ArduinoJson.h>
 
 #define AT_BAUD_RATE 115200
 
@@ -55,9 +55,33 @@ void setup() {
   Serial.println(WiFi.localIP());
   server.begin();
   Serial.println("The Setup is complete, starting loop");
+
+  
 }
 
 void loop(){
+  DynamicJsonDocument sensorData(1024);
+  sensorData["temperature"] = 25;
+  sensorData["pressure"] = 1000;
+  
+  String jsonData;
+  serializeJson(sensorData, jsonData);
+  int contentLength = jsonData.length();
+  //Serial.println(contentLength);
+  String contentLengthString = "Content Length: " + String(contentLength, 10);
+  //Serial.println(contentLengthString);
+
+  DynamicJsonDocument response(1024);
+  response["success"] = "true";
+  response["payload"] = jsonData;
+  String responseData;
+  serializeJson(response, responseData);
+  //int responseLength = responseData.length();
+  //Serial.println(responseLength);
+  //String contentLengthString = "Content Length: " + String(contentLength, 10);
+  //Serial.println(contentLengthString);
+
+
 
   WiFiClient client = server.available();   // Listen for incoming clients
 
@@ -80,45 +104,22 @@ void loop(){
             // and a content-type so the client knows what's coming, then a blank line:
             client.println("HTTP/1.1 200 OK");
             client.println("\r\n\r\n");
-            client.println("testing value");
-            client.println("Content-type:text/html");
+            client.println("Content-type: application/json");
+            client.println(responseData);
+            //client.println(contentLengthString);
             client.println("Connection: close");
             client.println();
             
             // turns the GPIOs on and off
-            if (header.indexOf("POST /13/on") >= 0) {
+            if (header.indexOf("GET /13/on") >= 0) {
               Serial.println("GPIO 13 on");
               output13State = "on";
               digitalWrite(output13, HIGH);
-            } else if (header.indexOf("POST /13/off") >= 0) {
+            } else if (header.indexOf("GET /13/off") >= 0) {
               Serial.println("GPIO 13 off");
               output13State = "off";
               digitalWrite(output13, LOW);
             }
-            
-            // Display the HTML web page
-            client.println("<!DOCTYPE html><html>");
-            client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-            client.println("<link rel=\"icon\" href=\"data:,\">");
-            // CSS to style the on/off buttons 
-            // Feel free to change the background-color and font-size attributes to fit your preferences
-            client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-            client.println(".button { background-color: #195B6A; border: none; color: white; padding: 16px 40px;");
-            client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-            client.println(".button2 {background-color: #77878A;}</style></head>");
-            
-            // Web Page Heading
-            client.println("<body><h1>ESP8266 Web Server</h1>");
-            
-            // Display current state, and ON/OFF buttons for GPIO 13
-            client.println("<p>GPIO 13 - State " + output13State + "</p>");
-            // If the output13State is off, it displays the ON button       
-            if (output13State=="off") {
-              client.println("<p><a href=\"/13/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/13/off\"><button class=\"button button2\">OFF</button></a></p>");
-            } 
-            client.println("</body></html>");
             
             // The HTTP response ends with another blank line
             client.println();

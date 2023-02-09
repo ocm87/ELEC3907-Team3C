@@ -14,9 +14,10 @@ GET request for reading sensor data
 GET reqests data into mySQL database for storage
 """
 
-on = requests.post(request_on)
+on = requests.get(request_on)
 
-off = requests.post(request_off)
+off = requests.get(request_off)
 
 print(on)
-print(on.text)
+print("plain text:", on.text)
+print("\nJSON:", on.json)
