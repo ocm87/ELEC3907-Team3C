@@ -35,6 +35,8 @@ const int ledPin = 13;      // the number of the LED pin
 int ledState = HIGH;         // the current state of the output pin
 int buttonState;             // the current reading from the input pin
 int lastButtonState = LOW;   // the previous reading from the input pin
+bool SosOn = false; // returns true if sos button has been activated
+bool x= false; //returns true if SosOn
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -47,6 +49,7 @@ void setup() {
 
   // set initial LED state
   digitalWrite(ledPin, ledState);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -76,6 +79,7 @@ void loop() {
         ledState = !ledState;
       }
     }
+   
   }
 
   // set the LED:
@@ -83,4 +87,17 @@ void loop() {
 
   // save the reading. Next time through the loop, it'll be the lastButtonState:
   lastButtonState = reading;
+  x = SOSbutton();
+    Serial.println(x); 
 }
+
+bool SOSbutton(){
+  if(ledState== HIGH){
+    SosOn= true;
+    }  
+  else{
+    SosOn = false; 
+  }
+  return SosOn;
+  }
+  
