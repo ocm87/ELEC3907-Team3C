@@ -1,6 +1,5 @@
 // Load Wi-Fi library
 #include <WiFiEspAT.h>
-#include <ArduinoJson.h>
 
 #define AT_BAUD_RATE 115200
 
@@ -27,7 +26,7 @@ unsigned long currentTime = millis();
 unsigned long previousTime = 0;
 // Define timeout time in milliseconds (example: 2000ms = 2s)
 const long timeoutTime = 2000;
-const char *response = "this is a test response"; // test plain text response
+const char *response = "{data: value, temp: value}"; // test plain text response
 
 void setup() {
   Serial.begin(115200);
@@ -61,17 +60,6 @@ void setup() {
 }
 
 void loop(){
-  DynamicJsonDocument sensorData(1024);
-  sensorData["temperature"] = 25;
-  sensorData["pressure"] = 1000;
-  
-  String jsonData;
-  serializeJson(sensorData, jsonData);
-  int contentLength = jsonData.length();
-  //Serial.println(contentLength);
-  String contentLengthString = "Content Length: " + String(contentLength, 10);
-  //Serial.println(contentLengthString);
-
 
   WiFiClient client = server.available();   // Listen for incoming clients
 
@@ -92,18 +80,22 @@ void loop(){
           if (currentLine.length() == 0) {
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("\r\n\r\n");
-            client.println("Content-type: text/plain");
-            client.println(response);
-            //client.println(contentLengthString);
-            client.println("Connection: close");
-            client.println();
+            if (header.indexOf("POST") >= 0) {
+              client.println("HTTP/1.1 400 OK");
+              client.println("Connection: close");
+              client.println();
+            } else {
+              client.println("HTTP/1.1 200 OK");
+              client.println("\r\n\r\n");
+              client.println("Content-type: text/plain"); 
+              client.println(response);           
+              client.println("Connection: close");
+              client.println();
+            }
             
             // turns the GPIOs on and off
             if (header.indexOf("GET /13/on") >= 0) {
               Serial.println("GPIO 13 on");
-              client.println(response);
               output13State = "on";
               digitalWrite(output13, HIGH);
             } else if (header.indexOf("GET /13/off") >= 0) {
