@@ -44,6 +44,6 @@ Micro SD card,
 Button (SOS button), 
 AHT20 Sensor,
 CO Sensor,
-Enclosure (?? maybe 3d printed),
+Enclosure (3d printed),
 etc
 
