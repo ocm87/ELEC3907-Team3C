@@ -24,9 +24,10 @@ const int output13 = 13;
 // Current time
 unsigned long currentTime = millis();
 // Previous time
-unsigned long previousTime = 0; 
+unsigned long previousTime = 0;
 // Define timeout time in milliseconds (example: 2000ms = 2s)
 const long timeoutTime = 2000;
+const char *response = "this is a test response"; // test plain text response
 
 void setup() {
   Serial.begin(115200);
@@ -71,17 +72,6 @@ void loop(){
   String contentLengthString = "Content Length: " + String(contentLength, 10);
   //Serial.println(contentLengthString);
 
-  DynamicJsonDocument response(1024);
-  response["success"] = "true";
-  response["payload"] = jsonData;
-  String responseData;
-  serializeJson(response, responseData);
-  //int responseLength = responseData.length();
-  //Serial.println(responseLength);
-  //String contentLengthString = "Content Length: " + String(contentLength, 10);
-  //Serial.println(contentLengthString);
-
-
 
   WiFiClient client = server.available();   // Listen for incoming clients
 
@@ -104,8 +94,8 @@ void loop(){
             // and a content-type so the client knows what's coming, then a blank line:
             client.println("HTTP/1.1 200 OK");
             client.println("\r\n\r\n");
-            client.println("Content-type: application/json");
-            client.println(responseData);
+            client.println("Content-type: text/plain");
+            client.println(response);
             //client.println(contentLengthString);
             client.println("Connection: close");
             client.println();
@@ -113,6 +103,7 @@ void loop(){
             // turns the GPIOs on and off
             if (header.indexOf("GET /13/on") >= 0) {
               Serial.println("GPIO 13 on");
+              client.println(response);
               output13State = "on";
               digitalWrite(output13, HIGH);
             } else if (header.indexOf("GET /13/off") >= 0) {

@@ -16,8 +16,8 @@ GET reqests data into mySQL database for storage
 
 on = requests.get(request_on)
 
-off = requests.get(request_off)
+#off = requests.get(request_off)
 
 print(on)
 print("plain text:", on.text)
-print("\nJSON:", on.json)
+print(on.text)
