@@ -20,4 +20,3 @@ on = requests.get(request_on)
 
 print(on)
 print("plain text:", on.text)
-print(on.text)
