@@ -8,10 +8,11 @@ Repository for ELEC3907 Project Course for Team 3C
 - Sensor data gathering and wireless connectivity + Flask web server
 
 ### Software: 
-Updated Feb 14.
+Updated Feb 16.
 - Getting Basic Wifi Functionality updated for Arduino via HTTP request (going with plain text and python parser)
 - Formatting HTTP request response (formatting function)
 - LAMP webserver setup on Raspberry Pi (Flask Based)
+- Added Remote enable/disable for the SOS function, with Python and the Arduino based code
 
 ### Hardware:
 Updated Feb 14.
