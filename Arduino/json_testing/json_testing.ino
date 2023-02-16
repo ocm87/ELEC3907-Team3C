@@ -7,6 +7,9 @@
 const char *ssid     = "O’s iPhone";
 const char *password = "110covered";
 
+// ESP8266 Hostname
+const char *hostname = "BLACK_BOX";
+
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -28,7 +31,11 @@ unsigned long previousTime = 0;
 const long timeoutTime = 2000;
 const char *response = "{data: value, temp: value}"; // test plain text response
 
+// Global SOS var
+bool SOS = false;
+
 void setup() {
+
   Serial.begin(115200);
   while(!Serial);
 
@@ -43,6 +50,8 @@ void setup() {
   // Connect to Wi-Fi network with SSID and password
   //Serial.println("Connecting to ");
   //Serial.println(ssid);
+  // Set Hostname
+  WiFi.setHostname(hostname);
   connectToWiFi();
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -56,11 +65,13 @@ void setup() {
   server.begin();
   Serial.println("The Setup is complete, starting loop");
 
-  
+  Serial.println(WiFi.hostname());
 }
 
 void loop(){
-
+  // uncomment these for viewing the sos status
+  //Serial.println("SOS Status");
+  //Serial.println(SOS);
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
@@ -80,30 +91,35 @@ void loop(){
           if (currentLine.length() == 0) {
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
-            if (header.indexOf("POST") >= 0) {
-              client.println("HTTP/1.1 400 OK");
-              client.println("Connection: close");
-              client.println();
-            } else {
+
+            if (header.indexOf("GET") >= 0) {
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
               client.println("Content-type: text/plain"); 
               client.println(response);           
               client.println("Connection: close");
               client.println();
+            } else if (header.indexOf("POST /sos/on") >= 0) {
+              client.println("HTTP/1.1 200 OK");
+              client.println("\r\n\r\n");
+              client.println("SOS true");
+              client.println("Connection: close");
+              client.println();
+              Serial.println("SOS Var true");
+              SOS = true;
+            } else if (header.indexOf("POST /sos/off") >= 0) {
+              client.println("HTTP/1.1 200 OK");
+              client.println("\r\n\r\n");
+              client.println("SOS false");
+              client.println("Connection: close");
+              client.println();
+              Serial.println("SOS Var false");
+              SOS = false;              
+            } else {
+              client.println("HTTP/1.1 400 OK");
+              client.println("Connection: close");
+              client.println();
             }
-            
-            // turns the GPIOs on and off
-            if (header.indexOf("GET /13/on") >= 0) {
-              Serial.println("GPIO 13 on");
-              output13State = "on";
-              digitalWrite(output13, HIGH);
-            } else if (header.indexOf("GET /13/off") >= 0) {
-              Serial.println("GPIO 13 off");
-              output13State = "off";
-              digitalWrite(output13, LOW);
-            }
-            
             // The HTTP response ends with another blank line
             client.println();
             // Break out of the while loop
@@ -148,3 +164,4 @@ void connectToWiFi() {
   }
     Serial.println(F("Setup ready"));
 }
+

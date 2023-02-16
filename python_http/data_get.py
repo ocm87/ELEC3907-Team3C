@@ -1,21 +1,30 @@
 import requests
 import json
+import time
 
 ARDUINO_IP = "172.20.10.10"
+FULL_ARDUINO_IP = "http://" + ARDUINO_IP
 
 request_on = "http://" + ARDUINO_IP + "/13/on"
 request_off = "http://" + ARDUINO_IP + "/13/off"
 
-# Some notes on the various requests
+# TODO Some notes on the various requests
 """
-POST requests for enabling the sos alarm remotly
-GET request for reading sensor data
-set appopriate error codes on raspi response for invalid api endpoints
-
 GET reqests data into mySQL database for storage
+
+API ENDPOINTS
+
+POST:
+/sos/on - turns on SOS
+/sos/off - turns off SOS
+
+GET:
+/sos/status - on/off status of the SOS function
+/sensor/all - json document of all sensor data
+/sensor/x - any other indivudial sensor info that we want to poll
 """
 
-on = requests.get(request_on)
+#on = requests.get(request_on)
 
 
 #! check return code function
@@ -38,19 +47,29 @@ def check_return_code(http_response, verbose: bool =False) -> bool:
     else:
         status = False
         if (verbose == True):
-            print(code, "BAD")
-            
+            print(code, "BAD")  
     return status
 
-#! get request data formating
 def get_text_data(ip_address: str, api_endpoint: str) -> str:
+    """
+    Simple function to return the plain text of an HTTP
+    response. Takes api IP address and the endpoint as inputs,
+    return the plain text from the response.
+    """
     req_addr = ip_address + api_endpoint
     response = requests.get(req_addr)
     if (check_return_code(response) == False):
-        return ""
-    text = response.text
-    
-    return text
+        return "invalid request"
+    return response.text
+
+def post_data(ip_address: str, api_endpoint: str) -> str:
+    """
+    """
+    req_addr = ip_address + api_endpoint
+    response = requests.post(req_addr)
+    if (check_return_code(response) == False):
+        return "invalid request"
+    return response.text
 
 
 def parse_response_text(text: str) -> str:
@@ -58,7 +77,20 @@ def parse_response_text(text: str) -> str:
     parsed = parsed
     return parsed
 
-check_return_code(on, True)
 
-on_text = get_text_data("http://172.20.10.10", "/13/off")
-print(parse_response_text(on_text))
+def SOS_toggle(ip_address: str, on_off: str):
+    endpoint = "/sos/" + on_off
+    text = post_data(ip_address, endpoint)
+    if (on_off == "on" and (text.find("SOS true")) >= 1):
+        print("SOS turned on")
+    elif (on_off == "off" and (text.find("SOS false")) >= 1):
+        print("SOS turned off")
+    else:
+        print("invalid response - look into this")
+    return
+
+#SOS_toggle(FULL_ARDUINO_IP, "on")
+
+#time.sleep(5)
+
+#SOS_toggle(FULL_ARDUINO_IP, "off")
