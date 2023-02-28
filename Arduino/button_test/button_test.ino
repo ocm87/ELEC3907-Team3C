@@ -107,9 +107,17 @@ void loop(){
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
               client.println("Content-type: text/plain"); 
+              client.println("request ok");           
+              client.println("Connection: close");
+              client.println();
+            } else if (header.indexOf("GET /sensor/all") >= 0) {
+              client.println("HTTP/1.1 200 OK");
+              client.println("\r\n\r\n");
+              client.println("Content-type: text/plain"); 
               client.println(response);           
               client.println("Connection: close");
               client.println();
+            }
             } else if (header.indexOf("POST /sos/on") >= 0) {
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
