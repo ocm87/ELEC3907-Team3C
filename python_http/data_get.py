@@ -93,4 +93,4 @@ def SOS_toggle(ip_address: str, on_off: str):
 
 #time.sleep(5)
 
-#SOS_toggle(FULL_ARDUINO_IP, "off")
+SOS_toggle(FULL_ARDUINO_IP, "off")

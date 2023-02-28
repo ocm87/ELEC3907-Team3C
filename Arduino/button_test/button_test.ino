@@ -69,42 +69,17 @@ void setup() {
 }
 
 void loop(){
-
+  // Button Interrrupt
   if (btnInterrupt) {
     if ((millis() - lastDebounceTime) > debounceDelay) {
       lastDebounceTime = millis();
       toggleSOS();
       delayMicroseconds(debounceDelay);
+
       btnInterrupt = false;
     }
   }
-  // Button needs constant polling so it must be in the regular loop
-  /*
-  int reading = digitalRead(buttonPin);
   
-  //Serial.println(reading); // read button state
-  // check to see if you just pressed the button
-  // (i.e. the input went from LOW to HIGH), and you've waited long enough
-  // since the last press to ignore any noise:
-  // If the switch changed, due to noise or pressing:
-  if (reading != lastButtonState) {
-    // reset the debouncing timer
-    lastDebounceTime = millis();
-  }
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    // whatever the reading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
-    // if the button state has changed:
-    if (reading != buttonState) {
-      // only toggle the LED if the new button state is HIGH
-      if (reading == HIGH) {
-        toggleSOS();
-      }
-    }
-  }
-  */
-  Serial.println("SOS state is:");
-  Serial.println(SOS);
   // uncomment these for viewing the sos status
   //Serial.println("SOS Status");
   //Serial.println(SOS);
@@ -188,6 +163,8 @@ void toggleSOS () {
   else {
     SOS = true;
   }
+  Serial.println("SOS Status");
+  Serial.println(SOS);
 }
 
 void connectToWiFi() {
