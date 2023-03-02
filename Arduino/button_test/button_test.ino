@@ -1,5 +1,7 @@
 // Load Wi-Fi library
 #include <WiFiEspAT.h>
+//Load json library
+#include <ArduinoJson.h>
 
 #define AT_BAUD_RATE 115200
 
@@ -34,6 +36,9 @@ int lastButtonState = HIGH;
 
 volatile bool btnInterrupt = false;
 
+// json doc setup
+DynamicJsonDocument doc(1024);
+
 
 
 void setup() {
@@ -66,6 +71,10 @@ void setup() {
   Serial.println("The Setup is complete, starting loop");
 
   Serial.println(WiFi.hostname());
+
+  //json init
+  doc["SOS"] = SOS;
+  doc["time"]   = "3:48pm";
 }
 
 void loop(){
@@ -79,6 +88,11 @@ void loop(){
       btnInterrupt = false;
     }
   }
+  // Update json doc with sensor readings
+  doc["SOS"] = SOS;
+  doc["time"] = "4:58pm";
+  
+  
   
   // uncomment these for viewing the sos status
   //Serial.println("SOS Status");
@@ -103,7 +117,7 @@ void loop(){
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
 
-            if (header.indexOf("GET") >= 0) {
+            if (header.indexOf("POST") >= 0) {
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
               client.println("Content-type: text/plain"); 
@@ -114,10 +128,10 @@ void loop(){
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
               client.println("Content-type: text/plain"); 
-              client.println(response);           
+              serializeJson(doc, client);
+              client.println("\n");        
               client.println("Connection: close");
               client.println();
-            }
             } else if (header.indexOf("POST /sos/on") >= 0) {
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");

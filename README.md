@@ -8,7 +8,9 @@ Repository for ELEC3907 Project Course for Team 3C
 - Sensor data gathering and wireless connectivity + Flask web server
 
 ### Software: 
-Updated Feb 16.
+Updated March 2.
+- SOS Functionality working via web request and button. Button code is integrated. Added GET /sensor/all endpoint for all sensor data and will add button.
+- Writing Python parser to interpret back into dictionary.
 - Getting Basic Wifi Functionality updated for Arduino via HTTP request (going with plain text and python parser)
 - Formatting HTTP request response (formatting function)
 - LAMP webserver setup on Raspberry Pi (Flask Based)
@@ -37,7 +39,7 @@ Owen M - Software
 
 **Parts List:**
 Arduino Mega with Integrated ESP8266, 
-Raspberry Pi,  
+Raspberry Pi,
 Pulse/Pulse Oximeter Sensor, 
 9DOF Accelerometer,
 Micro SD Card Interface,
