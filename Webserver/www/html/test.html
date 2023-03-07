@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<body>
+	<div id="text"> gorp </div>
+
+	<button type="button" onclick="clicked()"> clicky </button>
+
+	<div id="graph"></div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script>
+		function clicked() {
+			$.ajax({
+				url: "http://localhost:5000",
+				success: function(data) {
+					document.getElementById("text").innerHTML = data
+				}
+			})
+		}
+
+		const graphPoll = setInterval(function() {
+			$.ajax({
+				url: "http://localhost:5000/graph",
+				success: function(data) {
+					document.getElementById("graph").innerHTML = data
+				}
+			})
+		}, 5000)
+	</script>
+	</body>
+</html>
+
+
