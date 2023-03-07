@@ -43,12 +43,12 @@ int16_t getData(){
         return accelData;
 }
 
-/*boolean falldetect(avgData){
-    if(avdData>20000){
+boolean falldetect(int16_t avgData){
+    if(avgData>20000){
       return true;
     }
 }
-*/
+
 void loop() {
  
     accelgyro.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
@@ -65,7 +65,7 @@ void loop() {
     Serial.print(my); Serial.print("\t");
     Serial.println(mz);*/
     getData();
-    //falldetect(avgdata);
+    falldetect(avgData);
     blinkState = !blinkState;
     digitalWrite(LED_PIN, blinkState);
 }
