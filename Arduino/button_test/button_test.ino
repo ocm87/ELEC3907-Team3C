@@ -111,7 +111,7 @@ void loop(){
   doc["SOS"] = SOS;
 
   // read temp and humidity values
-  readTempHumidiy();
+  readTempHumidity();
   
   WiFiClient client = server.available();   // Listen for incoming clients
 
@@ -229,7 +229,7 @@ void connectToWiFi() {
     Serial.println(F("Setup ready"));
 }
 
-void readTempHumidiy() {
+void readTempHumidity() {
   if (aht20.available() == true)
   {
     //Get the new temperature and humidity value
