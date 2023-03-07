@@ -133,7 +133,7 @@ void loop(){
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
 
-            if (header.indexOf("POST") >= 0) {
+            if (header.indexOf("PUT") >= 0) {
               client.println("HTTP/1.1 200 OK");
               client.println("\r\n\r\n");
               client.println("Content-type: text/plain"); 

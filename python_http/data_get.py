@@ -1,15 +1,10 @@
 import requests
 import json
-import time
 import re
 
 ARDUINO_IP = "172.20.10.10"
 FULL_ARDUINO_IP = "http://" + ARDUINO_IP
 
-request_on = "http://" + ARDUINO_IP + "/13/on"
-request_off = "http://" + ARDUINO_IP + "/13/off"
-
-# TODO Some notes on the various requests
 """
 GET reqests data into mySQL database for storage
 
@@ -66,6 +61,8 @@ def get_text_data(ip_address: str, api_endpoint: str) -> str:
 
 def post_data(ip_address: str, api_endpoint: str) -> str:
     """
+    Send a HTTP POST request wihtout payload to a given 
+    HTTP endpoint. Returns the plain text response.
     """
     req_addr = ip_address + api_endpoint
     response = requests.post(req_addr)
@@ -75,6 +72,10 @@ def post_data(ip_address: str, api_endpoint: str) -> str:
 
 
 def parse_response_text(text: str) -> dict:
+    """
+    Parse the HTTP response plain text from the Arduino.
+    Returns the dictionary of sensor data
+    """
     data = re.findall("{.*}",text)
     data = data[0]
     data = json.loads(data)
@@ -84,26 +85,16 @@ def parse_response_text(text: str) -> dict:
 def SOS_toggle(ip_address: str, on_off: str):
     endpoint = "/sos/" + on_off
     text = post_data(ip_address, endpoint)
-    if (on_off == "on" and (text.find("SOS true")) >= 1):
+    if (on_off == "on" and (text.find("SOS Var true")) >= 1):
         print("SOS turned on")
-    elif (on_off == "off" and (text.find("SOS false")) >= 1):
+    elif (on_off == "off" and (text.find("SOS Var false")) >= 1):
         print("SOS turned off")
-    else:
-        print("invalid response - look into this")
     return
 
 #SOS_toggle(FULL_ARDUINO_IP, "on")
-
-#time.sleep(5)
-
 #SOS_toggle(FULL_ARDUINO_IP, "off")
 
 text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
-#print(text_response)
 
 parsed_data = parse_response_text(text_response)
 print(parsed_data)
-
-
-#test_string = '\nContent-type: text/plain\n{"SOS":false,"time":"3:48pm"}\n\nConnection: close'
-#print(parse_response_text(test_string))
