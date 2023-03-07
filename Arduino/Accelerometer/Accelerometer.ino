@@ -8,7 +8,7 @@ MPU6050 accelgyro;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 int16_t mx, my, mz;
-int16_t accelData[9];
+int16_t accelData[6];
 #define LED_PIN 13
 int16_t avgData;
 bool blinkState = false;
@@ -26,15 +26,20 @@ void setup() {
 }
 
 int16_t getData(){
-        accelData[0]=ax;
-        accelData[1]=ay;
-        accelData[2]=az;
-        accelData[3]=gx;
-        accelData[4]=gy;
-        accelData[5]=gz;
-        accelData[6]=mx;
-        accelData[7]=my;
-        accelData[8]=mz;
+        int16_t AccelAx=ax;
+        int16_t AccelAy=ay;
+        int16_t AccelAz=az;
+        int16_t AccelGx=gx;
+        int16_t AccelGy=gy;
+        int16_t AccelGz=gz;
+    
+        accelData[0]=AccelAx;
+        accelData[1]=AccelAy;
+        accelData[2]=AccelAz;
+        accelData[3]=AccelGx;
+        accelData[4]=AccelGy;
+        accelData[5]=AccelGz;
+        
         return accelData;
 }
 
