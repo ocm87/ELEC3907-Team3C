@@ -60,7 +60,8 @@ def get_text_data(ip_address: str, api_endpoint: str) -> str:
     req_addr = ip_address + api_endpoint
     response = requests.get(req_addr)
     if (check_return_code(response) == False):
-        return "invalid request"
+        #response.raise_for_status()
+        return False
     return response.text
 
 def post_data(ip_address: str, api_endpoint: str) -> str:
@@ -73,7 +74,7 @@ def post_data(ip_address: str, api_endpoint: str) -> str:
     return response.text
 
 
-def parse_response_text(text: str) -> str:
+def parse_response_text(text: str) -> dict:
     data = re.findall("{.*}",text)
     data = data[0]
     data = json.loads(data)
