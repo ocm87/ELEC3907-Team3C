@@ -2,6 +2,10 @@
 #include <WiFiEspAT.h>
 //Load json library
 #include <ArduinoJson.h>
+//Wire library for I2C
+#include <Wire.h>
+//AHT20 library
+#include <AHT20.h>
 
 #define AT_BAUD_RATE 115200
 
@@ -39,6 +43,8 @@ volatile bool btnInterrupt = false;
 // json doc setup
 DynamicJsonDocument doc(1024);
 
+//AHT20 Setup
+AHT20 aht20;
 
 
 void setup() {
@@ -74,7 +80,19 @@ void setup() {
 
   //json init
   doc["SOS"] = SOS;
-  doc["time"]   = "3:48pm";
+  doc["temp"] = 0;
+  doc["humid"] = 0;
+
+  // AHT20 Setup
+  Serial.println("Setting up AHT20:");
+  Wire.begin(); //Join I2C bus
+  //Check if the AHT20 will acknowledge
+  if (aht20.begin() == false)
+  {
+    Serial.println("AHT20 not detected. Please check wiring. Freezing.");
+    while (1);
+  }
+  Serial.println("AHT20 acknowledged.");
 }
 
 void loop(){
@@ -88,15 +106,13 @@ void loop(){
       btnInterrupt = false;
     }
   }
+  
   // Update json doc with sensor readings
   doc["SOS"] = SOS;
-  doc["time"] = "4:58pm";
+
+  // read temp and humidity values
+  readTempHumidiy();
   
-  
-  
-  // uncomment these for viewing the sos status
-  //Serial.println("SOS Status");
-  //Serial.println(SOS);
   WiFiClient client = server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
@@ -211,4 +227,15 @@ void connectToWiFi() {
     Serial.println(WiFi.localIP());
   }
     Serial.println(F("Setup ready"));
+}
+
+void readTempHumidiy() {
+  if (aht20.available() == true)
+  {
+    //Get the new temperature and humidity value
+    float temperature = aht20.getTemperature();
+    float humidity = aht20.getHumidity();
+    doc["temp"] = temperature;
+    doc["humid"] = humidity;
+  }
 }
