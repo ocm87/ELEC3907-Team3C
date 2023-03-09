@@ -5,7 +5,9 @@ Repository for ELEC3907 Project Course for Team 3C
 ## Current Project Status:
 
 ### General: 
-- Sensor data gathering and wireless connectivity + Flask web server
+- Sensor integration into mainline Arduino code.
+- Graphing and interpretation of values from sensors.
+- alarm responses + GPS functionality.
 
 ### Software: 
 Updated March 9.
