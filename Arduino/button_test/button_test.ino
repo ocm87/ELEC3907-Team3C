@@ -6,6 +6,10 @@
 #include <Wire.h>
 //AHT20 library
 #include <AHT20.h>
+//SPI library
+#include <SPI.h>
+//SD library
+#include <SD.h>
 
 #define AT_BAUD_RATE 115200
 
@@ -46,6 +50,7 @@ DynamicJsonDocument doc(1024);
 //AHT20 Setup
 AHT20 aht20;
 
+// SD Card Globals
 
 void setup() {
   // button setup
@@ -93,6 +98,9 @@ void setup() {
     while (1);
   }
   Serial.println("AHT20 acknowledged.");
+
+  // SD Card Setup
+  
 }
 
 void loop(){
@@ -111,7 +119,12 @@ void loop(){
   doc["SOS"] = SOS;
 
   // read temp and humidity values
-  readTempHumidity();
+  readTempHumidity(); // updates JSON doc as well
+
+  // Write JSON DOC to Micro SD Card
+  // Should have filename, string as inputs
+  // Should just open the files and write the string to the card
+
   
   WiFiClient client = server.available();   // Listen for incoming clients
 
