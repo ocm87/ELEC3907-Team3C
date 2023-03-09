@@ -20,6 +20,8 @@
 
 //create an BMP180 object using the I2C interface
 BMP180I2C bmp180(I2C_ADDRESS);
+unsigned long time_now= 0; 
+float pressure =0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -45,26 +47,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-	delay(1000);
-
-	//start a temperature measurement
-	if (!bmp180.measureTemperature())
-	{
-		Serial.println("could not start temperature measurement, is a measurement already running?");
-		return;
-	}
-
-	//wait for the measurement to finish. proceed as soon as hasValue() returned true. 
-	do
-	{
-		delay(100);
-	} while (!bmp180.hasValue());
-
-	Serial.print("Temperature: "); 
-	Serial.print(bmp180.getTemperature()); 
-	Serial.println(" degC");
+ 
 
 	//start a pressure measurement. pressure measurements depend on temperature measurement, you should only start a pressure 
 	//measurement immediately after a temperature measurement. 
@@ -77,11 +60,13 @@ void loop() {
 	//wait for the measurement to finish. proceed as soon as hasValue() returned true. 
 	do
 	{
-		delay(100);
+		if(millis()>=time_now + 1000){  // 1000 will be changed based on dealy we want
+    time_now+= millis();
+    }
 	} while (!bmp180.hasValue());
 
 	Serial.print("Pressure: "); 
 	Serial.print(bmp180.getPressure());
 	Serial.println(" Pa");
-  float pressure = bmp180.getPressure();
+  pressure = bmp180.getPressure();
 }
