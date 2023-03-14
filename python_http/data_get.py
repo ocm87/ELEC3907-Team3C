@@ -95,12 +95,3 @@ def SOS_toggle(ip_address: str, on_off: str):
     elif (on_off == "off" and (text.find("SOS Var false")) >= 1):
         print("SOS turned off")
     return
-
-#SOS_toggle(FULL_ARDUINO_IP, "on")
-#SOS_toggle(FULL_ARDUINO_IP, "off")
-"""
-text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
-if (text_response != False):
-    parsed_data = parse_response_text(text_response)
-    print(parsed_data)
-"""
