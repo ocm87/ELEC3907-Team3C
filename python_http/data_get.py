@@ -21,9 +21,6 @@ GET:
 /sensor/x - any other indivudial sensor info that we want to poll
 """
 
-#on = requests.get(request_on)
-
-
 #! check return code function
 def check_return_code(http_response, verbose: bool =False) -> bool:
     """
@@ -51,15 +48,17 @@ def get_text_data(ip_address: str, api_endpoint: str) -> str:
     """
     Simple function to return the plain text of an HTTP
     response. Takes api IP address and the endpoint as inputs,
-    return the plain text from the response.
+    return the plain text from the response. Will return false if
+    the HTTP code is bad or the target is unreachable.
     """
     req_addr = ip_address + api_endpoint
+
+    # Check if the target is reachable:
     try:
         ping (ip_address, timeout=1, verbose=True)
     except:
         print("Target not reachable")
         return False
-    #ping (ip_address, timeout=1, verbose=True)
     response = requests.get(req_addr)
 
     if (check_return_code(response) == False):
@@ -102,7 +101,7 @@ def SOS_toggle(ip_address: str, on_off: str):
 #SOS_toggle(FULL_ARDUINO_IP, "on")
 #SOS_toggle(FULL_ARDUINO_IP, "off")
 
-text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
-
-parsed_data = parse_response_text(text_response)
-print(parsed_data)
+#text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
+#if (text_response != False):
+#    parsed_data = parse_response_text(text_response)
+#    print(parsed_data)
