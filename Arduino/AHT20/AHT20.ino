@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include <AHT20.h>
 AHT20 aht20;
-
+unsigned long time_now= 0;
 void setup()
 {
   Serial.begin(9600);
@@ -42,5 +42,7 @@ void loop()
 
   //The AHT20 can respond with a reading every ~50ms. However, increased read time can cause the IC to heat around 1.0C above ambient.
   //The datasheet recommends reading every 2 seconds.
-  delay(2000);
+  if(millis()>=time_now + 1000){  // 1000 will be changed based on dealy we want
+    time_now+= millis();
+  }
 }
