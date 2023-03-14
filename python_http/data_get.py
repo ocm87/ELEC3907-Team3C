@@ -2,6 +2,7 @@ import requests
 import json
 import re
 from pythonping import ping
+#import os
 
 ARDUINO_IP = "172.20.10.10"
 FULL_ARDUINO_IP = "http://" + ARDUINO_IP
@@ -55,11 +56,10 @@ def get_text_data(ip_address: str, api_endpoint: str) -> str:
 
     # Check if the target is reachable:
     try:
-        ping (ip_address, timeout=1, verbose=True)
+        response = requests.get(req_addr, timeout=5)
     except:
         print("Target not reachable")
         return False
-    response = requests.get(req_addr)
 
     if (check_return_code(response) == False):
         #response.raise_for_status()
@@ -100,8 +100,9 @@ def SOS_toggle(ip_address: str, on_off: str):
 
 #SOS_toggle(FULL_ARDUINO_IP, "on")
 #SOS_toggle(FULL_ARDUINO_IP, "off")
-
-#text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
-#if (text_response != False):
-#    parsed_data = parse_response_text(text_response)
-#    print(parsed_data)
+"""
+text_response = get_text_data(FULL_ARDUINO_IP, "/sensor/all")
+if (text_response != False):
+    parsed_data = parse_response_text(text_response)
+    print(parsed_data)
+"""
