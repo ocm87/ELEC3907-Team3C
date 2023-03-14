@@ -1,8 +1,6 @@
 import requests
 import json
 import re
-from pythonping import ping
-#import os
 
 ARDUINO_IP = "172.20.10.10"
 FULL_ARDUINO_IP = "http://" + ARDUINO_IP
