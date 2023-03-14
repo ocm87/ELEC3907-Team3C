@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+from pythonping import ping
 
 ARDUINO_IP = "172.20.10.10"
 FULL_ARDUINO_IP = "http://" + ARDUINO_IP
@@ -53,7 +54,14 @@ def get_text_data(ip_address: str, api_endpoint: str) -> str:
     return the plain text from the response.
     """
     req_addr = ip_address + api_endpoint
+    try:
+        ping (ip_address, timeout=1, verbose=True)
+    except:
+        print("Target not reachable")
+        return False
+    #ping (ip_address, timeout=1, verbose=True)
     response = requests.get(req_addr)
+
     if (check_return_code(response) == False):
         #response.raise_for_status()
         return False
