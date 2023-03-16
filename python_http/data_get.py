@@ -5,22 +5,7 @@ import re
 ARDUINO_IP = "172.20.10.10"
 FULL_ARDUINO_IP = "http://" + ARDUINO_IP
 
-"""
-GET reqests data into mySQL database for storage
 
-API ENDPOINTS
-
-POST:
-/sos/on - turns on SOS
-/sos/off - turns off SOS
-
-GET:
-/sos/status - on/off status of the SOS function
-/sensor/all - json document of all sensor data
-/sensor/x - any other indivudial sensor info that we want to poll
-"""
-
-#! check return code function
 def check_return_code(http_response, verbose: bool =False) -> bool:
     """
     This function requires the python http request library. It returns

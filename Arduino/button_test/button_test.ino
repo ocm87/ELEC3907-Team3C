@@ -12,6 +12,7 @@
 #include <SD.h>
 
 #define AT_BAUD_RATE 115200
+#define CS_PIN 53
 
 // Replace with your network credentials
 const char *ssid     = "O’s iPhone";
@@ -50,7 +51,14 @@ DynamicJsonDocument doc(1024);
 //AHT20 Setup
 AHT20 aht20;
 
-// SD Card Globals
+//BMP180 setup
+
+// SD Card setup
+File myFile;
+unsigned long writeDelay = 500; // Wait 500ms between writes to the SD Card
+unsigned long lastWriteTime = 0;
+
+
 
 void setup() {
   // button setup
@@ -87,6 +95,7 @@ void setup() {
   doc["SOS"] = SOS;
   doc["temp"] = 0;
   doc["humid"] = 0;
+  doc["pressure"] = 0;
 
   // AHT20 Setup
   Serial.println("Setting up AHT20:");
@@ -100,7 +109,17 @@ void setup() {
   Serial.println("AHT20 acknowledged.");
 
   // SD Card Setup
+  Serial.print("Initializing SD card...");
   
+  pinMode(CS_PIN, OUTPUT);
+  if (!SD.begin(10)) {
+    Serial.println("SD card initialization failed!");
+    while (1);
+  }
+  Serial.println("SD card initialization done.");
+  
+  
+  // BMP180 Setup
 }
 
 void loop(){
@@ -120,6 +139,14 @@ void loop(){
 
   // read temp and humidity values
   readTempHumidity(); // updates JSON doc as well
+
+  //readPressure();
+
+  //Write to the SD Card
+  char buffer[100];
+  serializeJson(doc, buffer);
+  //Serial.println(buffer);
+  delayedWriteSD("sensor_readings.txt", buffer);
 
   // Write JSON DOC to Micro SD Card
   // Should have filename, string as inputs
@@ -251,4 +278,35 @@ void readTempHumidity() {
     doc["temp"] = temperature;
     doc["humid"] = humidity;
   }
+}
+
+void readPressure () { //TODO implement get pressure function
+  float pressure = 0;
+}
+
+void writeSD(String FileName, String Cont) {
+    myFile=SD.open(FileName, FILE_WRITE);
+    if (myFile) {
+      myFile.println(Cont);
+      myFile.close();
+    } else {
+      Serial.println("file not open");      
+    }
+}
+
+void delayedWriteSD (String filename, String cont) {
+  currentTime = millis();
+  if (currentTime - lastWriteTime > writeDelay) {
+    lastWriteTime = currentTime;
+    writeSD(filename, cont);
+    Serial.println(cont); //comment out if needed
+  }
+}
+
+void readSD(String FileName) {
+  myFile=SD.open(FileName);
+  while (myFile.available()) {
+      Serial.write(myFile.read());
+    }
+  myFile.close();
 }

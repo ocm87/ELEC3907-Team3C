@@ -19,20 +19,20 @@ void setup() {
   }
   Serial.println("initialization done.");
 }
-void Write(String FileName, String Cont){
+void writeSD(String FileName, String Cont){
     myFile=SD.open(FileName, FILE_WRITE);
     myFile.println(Cont);
     myFile.close();
   }
 
-void Read(String FileName){
+void readSD(String FileName){
   myFile=SD.open(FileName);
   while (myFile.available()) {
       Serial.write(myFile.read());
     }
   myFile.close();
-  
 }
+
 void loop() {
   SD.remove("A");
   Write("A","nice");
