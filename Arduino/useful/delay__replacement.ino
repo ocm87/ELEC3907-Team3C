@@ -6,7 +6,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if(millis()>=time_now + 1000){  // 1000 will be changed based on delay we want
-    time_now+= millis();
+    time_now= millis();
   }
   }
 
