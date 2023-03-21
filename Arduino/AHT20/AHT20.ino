@@ -43,6 +43,6 @@ void loop()
   //The AHT20 can respond with a reading every ~50ms. However, increased read time can cause the IC to heat around 1.0C above ambient.
   //The datasheet recommends reading every 2 seconds.
   if(millis()>=time_now + 1000){  // 1000 will be changed based on dealy we want
-    time_now+= millis();
+    time_now= millis();
   }
 }
