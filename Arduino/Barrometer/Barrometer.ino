@@ -61,7 +61,7 @@ void loop() {
 	do
 	{
 		if(millis()>=time_now + 1000){  // 1000 will be changed based on dealy we want
-    time_now+= millis();
+    			time_now= millis();
     }
 	} while (!bmp180.hasValue());
 
