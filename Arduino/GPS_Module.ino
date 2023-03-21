@@ -30,6 +30,7 @@ void loop(){
       Serial.print(gps.location.lat(), 6);
       Serial.print(" Longitude= "); 
       Serial.println(gps.location.lng(), 6);
+      Serial.print("Altitude= ");
       Serial.println(gps.altitude.meters()); // Altitude in meters (double)
     }
   }
