@@ -10,6 +10,8 @@
 #include <SPI.h>
 //SD library
 #include <SD.h>
+//BMP library
+#include <BMP180I2C.h>
 
 #define AT_BAUD_RATE 115200
 #define CS_PIN 53
@@ -52,12 +54,16 @@ DynamicJsonDocument doc(1024);
 AHT20 aht20;
 
 //BMP180 setup
+#define BMP_I2C_ADDRESS 0x77
+BMP180I2C bmp180(BMP_I2C_ADDRESS);
+unsigned long lastPressure = 0;
+
 
 // SD Card setup
 File myFile;
 unsigned long writeDelay = 500; // Wait 500ms between writes to the SD Card
 unsigned long lastWriteTime = 0;
-
+String sensorFile = "sensor_readings.txt";
 
 
 void setup() {
@@ -112,14 +118,22 @@ void setup() {
   Serial.print("Initializing SD card...");
   
   pinMode(CS_PIN, OUTPUT);
-  if (!SD.begin(10)) {
+  if (!SD.begin(53)) {
     Serial.println("SD card initialization failed!");
     while (1);
   }
   Serial.println("SD card initialization done.");
+  SD.remove(sensorFile);
   
   
   // BMP180 Setup
+  if (!bmp180.begin())
+	{
+		Serial.println("Initialization failed check your BMP180 Interface and I2C Address.");
+		while (1);
+	}
+	bmp180.resetToDefaults(); //reset sensor to default parameters
+	bmp180.setSamplingMode(BMP180MI::MODE_UHR); //enable ultra high resolution mode for pressure measurements
 }
 
 void loop(){
@@ -140,13 +154,13 @@ void loop(){
   // read temp and humidity values
   readTempHumidity(); // updates JSON doc as well
 
-  //readPressure();
+  readPressure(); // updates JSON doc with pressure
 
   //Write to the SD Card
   char buffer[100];
   serializeJson(doc, buffer);
   //Serial.println(buffer);
-  delayedWriteSD("sensor_readings.txt", buffer);
+  delayedWriteSD(sensorFile, buffer);
 
   // Write JSON DOC to Micro SD Card
   // Should have filename, string as inputs
@@ -269,7 +283,7 @@ void connectToWiFi() {
     Serial.println(F("Setup ready"));
 }
 
-void readTempHumidity() {
+void readTempHumidity() { 
   if (aht20.available() == true)
   {
     //Get the new temperature and humidity value
@@ -280,8 +294,32 @@ void readTempHumidity() {
   }
 }
 
-void readPressure () { //TODO implement get pressure function
-  float pressure = 0;
+void readPressure () { 
+  if ((currentTime - lastPressure) > 100) {
+    if (!bmp180.measureTemperature()) {
+		  Serial.println("could not start temperature measurement, is a measurement already running?");
+		  return;
+	  }
+    //wait for the measurement to finish. proceed as soon as hasValue() returned true. 
+    do {
+      delay(10);
+    } while (!bmp180.hasValue());
+
+    bmp180.getTemperature(); 
+    //start a pressure measurement. pressure measurements depend on temperature measurement
+    //only start pressure right after temp.
+    //measurement immediately after a temperature measurement. 
+    if (!bmp180.measurePressure())
+    {
+      Serial.println("could not start perssure measurement, is a measurement already running?");
+      return;
+    }
+    //wait for the measurement to finish. proceed as soon as hasValue() returned true. 
+    do {
+      delay(10);
+    } while (!bmp180.hasValue());
+    doc["pressure"] = bmp180.getPressure();
+  }
 }
 
 void writeSD(String FileName, String Cont) {
