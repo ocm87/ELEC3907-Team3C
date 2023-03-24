@@ -57,13 +57,20 @@ AHT20 aht20;
 #define BMP_I2C_ADDRESS 0x77
 BMP180I2C bmp180(BMP_I2C_ADDRESS);
 unsigned long lastPressure = 0;
+unsigned long pressureReadDelay = 100;
 
 
 // SD Card setup
 File myFile;
-unsigned long writeDelay = 500; // Wait 500ms between writes to the SD Card
+unsigned long writeDelay = 1000; // Wait 1000ms between writes to the SD Card
 unsigned long lastWriteTime = 0;
-String sensorFile = "sensor_readings.txt";
+String sensorFile = "SENSORS.txt";
+
+// Gas Sensor setup
+#define GAS_PIN A0
+unsigned long lastGasRead = 0;
+unsigned long gasReadDelay = 500;
+
 
 
 void setup() {
@@ -102,6 +109,7 @@ void setup() {
   doc["temp"] = 0;
   doc["humid"] = 0;
   doc["pressure"] = 0;
+  doc["CO2"] = 0;
 
   // AHT20 Setup
   Serial.println("Setting up AHT20:");
@@ -116,6 +124,7 @@ void setup() {
 
   // SD Card Setup
   Serial.print("Initializing SD card...");
+  SD.remove(sensorFile);
   
   pinMode(CS_PIN, OUTPUT);
   if (!SD.begin(53)) {
@@ -134,6 +143,9 @@ void setup() {
 	}
 	bmp180.resetToDefaults(); //reset sensor to default parameters
 	bmp180.setSamplingMode(BMP180MI::MODE_UHR); //enable ultra high resolution mode for pressure measurements
+
+  // Gas Sensor Setup
+  pinMode(GAS_PIN, INPUT);
 }
 
 void loop(){
@@ -156,11 +168,15 @@ void loop(){
 
   readPressure(); // updates JSON doc with pressure
 
+  readCO2(); // updates JSON doc with CO2 in ppm
+
   //Write to the SD Card
   char buffer[100];
   serializeJson(doc, buffer);
-  //Serial.println(buffer);
-  delayedWriteSD(sensorFile, buffer);
+  Serial.println(buffer);
+  if (WiFi.status() != WL_CONNECTED) {
+    delayedWriteSD(sensorFile, buffer);
+  }
 
   // Write JSON DOC to Micro SD Card
   // Should have filename, string as inputs
@@ -295,7 +311,7 @@ void readTempHumidity() {
 }
 
 void readPressure () { 
-  if ((currentTime - lastPressure) > 100) {
+  if ((currentTime - lastPressure) > pressureReadDelay) {
     if (!bmp180.measureTemperature()) {
 		  Serial.println("could not start temperature measurement, is a measurement already running?");
 		  return;
@@ -322,7 +338,7 @@ void readPressure () {
   }
 }
 
-void writeSD(String FileName, String Cont) {
+void writeSD (String FileName, String Cont) {
     myFile=SD.open(FileName, FILE_WRITE);
     if (myFile) {
       myFile.println(Cont);
@@ -341,10 +357,16 @@ void delayedWriteSD (String filename, String cont) {
   }
 }
 
-void readSD(String FileName) {
+void readSD (String FileName) {
   myFile=SD.open(FileName);
   while (myFile.available()) {
       Serial.write(myFile.read());
     }
   myFile.close();
+}
+
+void readCO2 () {
+  if ((currentTime - lastGasRead) > gasReadDelay) {
+    doc["CO2"] = analogRead(GAS_PIN);
+  }
 }
