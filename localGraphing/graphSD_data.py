@@ -58,7 +58,13 @@ def plot_pressure (pressure_list):
     plt.show()
 
     return
+
+def plot_CO2 (CO2_list):
+    """
+    """
+    
+    return
+
 trim_data = data.get("pressure")
 test = trim_data.pop(0)
 plot_pressure(trim_data)
-
