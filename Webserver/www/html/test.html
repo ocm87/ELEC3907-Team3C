@@ -1,33 +1,78 @@
 <!DOCTYPE html>
 <html>
-	<body>
-	<div id="text"> gorp </div>
+<style>
+	.title {
+		width: 100vw;
+		text-align: center;
+		font-weight: bold;
+		font-size: xx-large;
+	}
+	img {
+		width: 40vw;
+	}
+	.row {
+		display: flex;
+		flex-direction: row;
+	}
+	.SOSactive {
+		color: red;
+		font-weight: bold;
+	}
+	.SOSinactive {
+		color: green;
+	}
+</style>
+<body>
+	<div class="title">
+		First Responder Black Box
+	</div>
 
-	<button type="button" onclick="clicked()"> clicky </button>
+	<div class="row">
+		<div id="humidGraph"> Graphs are loading... </div>
+		<div id="tempGraph"></div>
+		
+	</div>
 
-	<div id="graph"></div>
+	<div class="row">
+		<div id="pressureGraph"></div>
+		<div id="co2Graph"></div>
+		<div id="SOS">
+			<div id="SOSstatus" class="SOSinactive"> SOS is off </div>
+		</div>
+	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 	<script>
-		function clicked() {
-			$.ajax({
-				url: "http://localhost:5000",
-				success: function(data) {
-					document.getElementById("text").innerHTML = data
-				}
-			})
-		}
-
 		const graphPoll = setInterval(function() {
 			$.ajax({
 				url: "http://localhost:5000/graph",
 				success: function(data) {
-					document.getElementById("graph").innerHTML = data
+					document.getElementById("humidGraph").innerHTML = data[0]
+					document.getElementById("tempGraph").innerHTML = data[1]
+					document.getElementById("pressureGraph").innerHTML = data[2]
+					document.getElementById("co2Graph").innerHTML = data[3]
+				}
+			})
+		}, 500)
+
+		const SOSpoll = setInterval(function() {
+			$.ajax({
+				url: "http://localhost:5000/querySOS",
+				success: function(data) {
+					element = document.getElementById("SOSstatus")
+					if(data) {
+						element.innerHTML = "SOS has been activated!"
+						element.setAttribute("class", "SOSactive")
+					}
+					else {
+						element.innerHTML = "SOS is off"
+						element.setAttribute("class", "SOSinactive")
+					}
 				}
 			})
 		}, 5000)
 	</script>
-	</body>
+</body>
 </html>
 
 
