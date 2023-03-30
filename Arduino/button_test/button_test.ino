@@ -12,6 +12,10 @@
 #include <SD.h>
 //BMP library
 #include <BMP180I2C.h>
+//GPS Libs
+#include <TinyGPS++.h>
+//#include <SoftwareSerial.h>
+
 
 #define AT_BAUD_RATE 115200
 #define CS_PIN 53
@@ -71,6 +75,13 @@ String sensorFile = "SENSORS.txt";
 unsigned long lastGasRead = 0;
 unsigned long gasReadDelay = 500;
 
+// GPS Setup
+unsigned long lastGPSRead = 0;
+unsigned long GPSReadDelay = 1000;
+static const int RXPin = 19, TXPin = 18;
+static const uint32_t GPSBaud = 9600;
+TinyGPSPlus gps; // TinyGPS object
+//SoftwareSerial ss(RXPin, TXPin); //software serial objects
 
 
 void setup() {
@@ -110,6 +121,8 @@ void setup() {
   doc["humid"] = 0;
   doc["pressure"] = 0;
   doc["CO2"] = 0;
+  doc["latitude"] = 45.384915;
+  doc["longitude"] = -75.697438;
 
   // AHT20 Setup
   Serial.println("Setting up AHT20:");
@@ -124,9 +137,9 @@ void setup() {
 
   // SD Card Setup
   Serial.print("Initializing SD card...");
-  SD.remove(sensorFile);
   
   pinMode(CS_PIN, OUTPUT);
+  digitalWrite(CS_PIN, HIGH);
   if (!SD.begin(53)) {
     Serial.println("SD card initialization failed!");
     while (1);
@@ -146,6 +159,11 @@ void setup() {
 
   // Gas Sensor Setup
   pinMode(GAS_PIN, INPUT);
+
+  // GPS Setup
+  //ss.begin(GPSBaud);
+  Serial2.begin(GPSBaud);
+  while (!Serial2);
 }
 
 void loop(){
@@ -170,10 +188,12 @@ void loop(){
 
   readCO2(); // updates JSON doc with CO2 in ppm
 
+  readGPS();
+
   //Write to the SD Card
-  char buffer[100];
+  char buffer[200];
   serializeJson(doc, buffer);
-  Serial.println(buffer);
+  //Serial.println(buffer);
   if (WiFi.status() != WL_CONNECTED) {
     delayedWriteSD(sensorFile, buffer);
   }
@@ -311,6 +331,7 @@ void readTempHumidity() {
 }
 
 void readPressure () { 
+  currentTime = millis();
   if ((currentTime - lastPressure) > pressureReadDelay) {
     if (!bmp180.measureTemperature()) {
 		  Serial.println("could not start temperature measurement, is a measurement already running?");
@@ -335,6 +356,7 @@ void readPressure () {
       delay(10);
     } while (!bmp180.hasValue());
     doc["pressure"] = bmp180.getPressure();
+    lastPressure = millis();
   }
 }
 
@@ -366,7 +388,21 @@ void readSD (String FileName) {
 }
 
 void readCO2 () {
+  currentTime = millis();
   if ((currentTime - lastGasRead) > gasReadDelay) {
     doc["CO2"] = analogRead(GAS_PIN);
+    lastGasRead = millis();
+  }
+}
+
+void readGPS () {
+  currentTime = millis();
+  if ((currentTime - lastGPSRead) > GPSReadDelay) {
+    gps.encode(Serial2.read());
+    if (gps.location.isValid()) {
+      doc["latitude"] = gps.location.lat();
+      doc["longitude"] = gps.location.lng();
+      lastGPSRead = millis();
+    }
   }
 }
