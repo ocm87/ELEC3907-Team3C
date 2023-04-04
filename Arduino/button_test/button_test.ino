@@ -44,7 +44,7 @@ bool SOS = false;
 
 //Button setup
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
+unsigned long debounceDelay = 500;    // the debounce time; increase if the output flickers
 const int buttonPin = 2;    // the number of the pushbutton pin
 //int buttonState = LOW;            // the current reading from the input pin
 int lastButtonState = HIGH;
@@ -68,7 +68,7 @@ unsigned long pressureReadDelay = 100;
 File myFile;
 unsigned long writeDelay = 1000; // Wait 1000ms between writes to the SD Card
 unsigned long lastWriteTime = 0;
-String sensorFile = "SENSORS.txt";
+String sensorFile = "SENSORS.TXT";
 
 // Gas Sensor setup
 #define GAS_PIN A0
