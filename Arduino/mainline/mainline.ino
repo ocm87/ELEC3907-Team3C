@@ -41,6 +41,7 @@ const char *response = "{data: value, temp: value}"; // test plain text response
 
 // Global SOS var
 bool SOS = false;
+const int SOS_LED = 7;
 
 //Button setup
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
@@ -164,6 +165,9 @@ void setup() {
   //ss.begin(GPSBaud);
   Serial2.begin(GPSBaud);
   while (!Serial2);
+
+  // SOS LED
+  pinMode(SOS_LED, OUTPUT);
 }
 
 void loop(){
@@ -177,9 +181,12 @@ void loop(){
       btnInterrupt = false;
     }
   }
+
   
   // Update json doc with sensor readings
   doc["SOS"] = SOS;
+  
+  updateSOSLED();
 
   // read temp and humidity values
   readTempHumidity(); // updates JSON doc as well
@@ -291,7 +298,7 @@ void toggleSOS () {
   else {
     SOS = true;
   }
-  Serial.println("SOS Status");
+  Serial.println("SOS Status:");
   Serial.println(SOS);
 }
 
@@ -406,4 +413,12 @@ void readGPS () {
       lastGPSRead = millis();
     }
   }
+}
+
+void updateSOSLED() {
+  if (SOS == true) {
+    digitalWrite(SOS_LED, HIGH);
+  }
+  else
+    digitalWrite(SOS_LED, LOW);
 }

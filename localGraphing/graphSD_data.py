@@ -2,17 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from readSD import readSD
 
+SD_PATH = "/Volumes/ARDUINO_SD/SENSORS.TXT"
 SD_FILE_PATH = "/Users/owenmacintosh/Documents/ELEC3907-Team3C/localGraphing/exFile.txt"
 
 # get dictionary of data from file
 data = readSD(SD_FILE_PATH)
 print(data)
-
-#TODO define possible plots: SOS (1/0), temp (C), humid (%), pressure (Pa)
-
-#! all time intervals are approx. 1s since that is the rate it's stored on SD
-
-#* Can I do auto y-asix scaling??? have it ignore first
 
 def inter_SOS (SOS_list: list) -> list:
     bool_SOS = []
@@ -152,8 +147,5 @@ def auto_plot_all ():
 
 auto_plot_all()
 
-#trim_data = data.get("humid")
-#test = trim_data.pop(0)
-#plot_pressure(trim_data)
 
 
