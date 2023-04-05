@@ -3,10 +3,9 @@ import numpy as np
 from readSD import readSD
 
 SD_PATH = "/Volumes/ARDUINO_SD/SENSORS.TXT"
-SD_FILE_PATH = "/Users/owenmacintosh/Documents/ELEC3907-Team3C/localGraphing/exFile.txt"
 
 # get dictionary of data from file
-data = readSD(SD_FILE_PATH)
+data = readSD(SD_PATH)
 print(data)
 
 def inter_SOS (SOS_list: list) -> list:
