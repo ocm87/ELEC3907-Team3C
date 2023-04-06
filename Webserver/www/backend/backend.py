@@ -8,7 +8,8 @@ import json
 import time
 from datetime import datetime, timedelta
 
-from data_get import FULL_ARDUINO_IP, get_text_data, parse_response_text
+from data_get import FULL_ARDUINO_IP, get_text_data, parse_response_text, SOS_toggle
+from gps_plot import  gen_gps_html
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost:3306/FRblackbox'
@@ -24,6 +25,8 @@ class maindata(db.Model):
 	temp = db.Column(db.Float, nullable=False)
 	pressure = db.Column(db.Integer, nullable=False)
 	co2 = db.Column(db.Integer, nullable=False)
+	latitude = db.Column(db.Float, nullable=False)
+	longitude = db.Column(db.Float, nullable=False)
 	timereceived = db.Column(db.DateTime, nullable=False)
 
 @app.route('/receiveData')
@@ -42,6 +45,8 @@ def receiveData():
 				temp = parsed_data.get('temp'),
 				pressure = parsed_data.get('pressure'),
 				co2 = parsed_data.get('CO2'),
+				latitude = parsed_data.get('latitude'),
+				longitude = parsed_data.get('longitude'),
 				timereceived = datetime.now()
 			)
 			db.session.add(finalData)
@@ -51,10 +56,38 @@ def receiveData():
 
 @app.route('/querySOS', methods=['GET'])
 def querySOS():
-	#SOS_toggle(FULL_ARDUINO_IP)
-	data = db.session.query(maindata.sos).order_by(maindata.sos.desc()).first()
+	data = db.session.query(maindata.sos).filter(maindata.timereceived > datetime.now() - timedelta(hours=1)).order_by(maindata.id.desc()).first()
 
-	response = make_response(data, 200)
+	res = "False"
+	if data is not None:
+		res = str(data.sos)
+
+	response = make_response(res, 200)
+	response.mimetype = "text/plain"
+	response.headers.add("Access-Control-Allow-Origin", "*")
+	return response
+
+@app.route('/sendSOS')
+def sendSOS():
+	data = db.session.query(maindata.sos).filter(maindata.timereceived > datetime.now() - timedelta(hours=1)).order_by(maindata.id.desc()).first()
+	toggle = "off"
+	if(not data):
+		toggle = "on"
+	SOS_toggle(FULL_ARDUINO_IP, toggle)
+
+	response = make_response("ok", 200)
+	response.mimetype = "text/plain"
+	response.headers.add("Access-Control-Allow-Origin", "*")
+	return response
+
+@app.route('/generateGPS')
+def generateGPS():
+	coord = db.session.query(maindata.latitude, maindata.longitude).order_by(maindata.id.desc()).first()
+
+	if coord is not None:
+		gen_gps_html(coord.latitude, coord.longitude)
+
+	response = make_response("ok", 200)
 	response.mimetype = "text/plain"
 	response.headers.add("Access-Control-Allow-Origin", "*")
 	return response
@@ -77,7 +110,7 @@ def graph():
 
 	plotDatax = [humidx, tempx, pressurex, co2x]
 	title = ["Humidity", "Temperature", "Pressure", "CO2"]
-	ylim = [[0,100], [20, 30], [101000, 103000], [200, 5000]]
+	ylim = [[0,100], [20, 30], [101000, 103000], [0, 1000]]
 	ylabel = ["Percent (%)", "Degrees (C)", "Pascals (Pa)", "Concentration (PPM)"]
 	html = []
 	for n in range(0,4):
@@ -89,10 +122,6 @@ def graph():
 		plot.set_title(title[n])
 		plot.set_ylabel(ylabel[n])
 		plot.set_xlabel("Time (dd mm:ss)")
-
-		plot.annotate("fehfj", xy=(25,25), xytext=(25,25))
-		#if plotDatax:
-		#plot.annotate("fejhfsjfe", xy=(plotDatax[n][0], date2num(timescale)[0]), xytext=(plotDatax[n][0], date2num(timescale)[0]))
 
 		buf = BytesIO()
 		fig.savefig(buf, format="png")
