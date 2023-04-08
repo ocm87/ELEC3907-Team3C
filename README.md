@@ -3,9 +3,9 @@ Repository for ELEC3907 Project Course for Team 3C
 
 --- 
 ## Current Project Status:
+Finished, waiting to present demo on April 11, 2023
 
-### General: 
-## NEED TO GET ALL CODE INTO GITHUB FOR FINAL REPORT
+### General:
 - Sensor integration into mainline Arduino code.
 - Graphing and interpretation of values from sensors.
 - alarm responses + GPS functionality.
