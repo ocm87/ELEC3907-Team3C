@@ -14,15 +14,14 @@
 #include <BMP180I2C.h>
 //GPS Libs
 #include <TinyGPS++.h>
-//#include <SoftwareSerial.h>
 
 
 #define AT_BAUD_RATE 115200
 #define CS_PIN 53
 
 // Replace with your network credentials
-const char *ssid     = "O’s iPhone";
-const char *password = "110covered";
+const char *ssid     = "SSID";
+const char *password = "passwd";
 
 // ESP8266 Hostname
 const char *hostname = "BLACK_BOX";
@@ -303,7 +302,7 @@ void toggleSOS () {
 }
 
 void connectToWiFi() {
-//Connect to WiFi Network
+// Connect to WiFi Network
    Serial.println();
    Serial.println();
    Serial.print("Connecting to WiFi");

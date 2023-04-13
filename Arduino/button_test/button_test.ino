@@ -21,8 +21,8 @@
 #define CS_PIN 53
 
 // Replace with your network credentials
-const char *ssid     = "O’s iPhone";
-const char *password = "110covered";
+const char *ssid     = "SSID";
+const char *password = "passwd";
 
 // ESP8266 Hostname
 const char *hostname = "BLACK_BOX";
